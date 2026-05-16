@@ -1,5 +1,5 @@
 # Handheld Deck
-This is a in-progress project where I intend to combine a RP2040 Microcontroller (for peripheral control and communication) with a RK3566 SoC for system processing, networking, and display output. 
+An active project where a RP2040 Microcontroller (for peripheral control and communication) and a RK3566 SoC (for system processing, networking, and display output) create a handheld system with a custom operating system to run specific applications.
 
 # Prototyping
 For prototyping, I am using these components together:
