@@ -2,7 +2,7 @@
 set -e
 
 ROOT_DIR="$(cd "$(dirname "$0")/.." && pwd)"
-BUILD_DIR="$ROOT_DIR/RP2040/build"
+BUILD_DIR="$ROOT_DIR/RP2350/build"
 
 echo "[flash] Searching for UF2..."
 
