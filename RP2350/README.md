@@ -9,7 +9,7 @@ For IntelliSense to recognize the Pico SDK, you must ensure VSCode is working ou
 First, ensure you have the WSL and CMake Tools extention installed.
 Then, press `Ctrl + Shift + P` -> `WSL: Open folder in WSL`.
 
-If it asks for your CMake, make sure to select the CMake file in RP2040, and scan for toolkits recursively.
+If it asks for your CMake, make sure to select the CMake file in RP2350, and scan for toolkits recursively.
 
 > - Keep project inside WSL filesystem (not /mnt/c or /mnt/d) for faster builds
 > - Example: ~/handheld-deck instead of /mnt/d/Development/handheld-deck
