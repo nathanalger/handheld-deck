@@ -1,0 +1,10 @@
+{
+  "cmake.configureOnOpen": true,
+  "cmake.generator": "Ninja",
+  "cmake.buildDirectory": "${workspaceFolder}/RP2040/build",
+
+  "C_Cpp.default.compileCommands": "${workspaceFolder}/RP2040/build/compile_commands.json",
+
+  "C_Cpp.default.configurationProvider": "ms-vscode.cmake-tools",
+  "cmake.sourceDirectory": "/mnt/d/Development/handheld-deck/RP2040"
+}
