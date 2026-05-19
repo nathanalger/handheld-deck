@@ -10,10 +10,12 @@ int main()
    gpio_init(LED_PIN);
    gpio_set_dir(LED_PIN, GPIO_OUT);
 
+   uint16_t payload = 0xffff;
+
    while (1)
    {
       gpio_put(LED_PIN, 1);
-      uart_putb('A');
+      uart_packet(PKT_PING, &payload, 2);
       sleep_ms(500);
 
       gpio_put(LED_PIN, 0);

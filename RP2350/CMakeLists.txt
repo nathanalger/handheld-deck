@@ -13,6 +13,7 @@ pico_sdk_init()
 
 set(SOURCES
     src/main.c
+    src/stringf.c
     drivers/uart.c
 )
 
