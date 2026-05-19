@@ -122,3 +122,22 @@ gpio_handler_t *gpio_get_handler(uint8_t gpio)
 
    return &handlers[gpio];
 }
+
+void gpio_enable_events(uint8_t gpio, gpio_event_t events)
+{
+   if (gpio >= MAX_GPIO_PINS)
+      return;
+
+   handlers[gpio].enabled = true;
+   handlers[gpio].subscribed_events = events;
+
+   uint32_t hw_events = 0;
+
+   if (events & GPIO_EVENT_RISING)
+      hw_events |= GPIO_IRQ_EDGE_RISE;
+
+   if (events & GPIO_EVENT_FALLING)
+      hw_events |= GPIO_IRQ_EDGE_FALL;
+
+   gpio_set_irq_enabled_with_callback(gpio, hw_events, true, gpio_irq_handler);
+}

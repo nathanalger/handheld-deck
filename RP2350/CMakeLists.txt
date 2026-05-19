@@ -23,7 +23,8 @@ set(SOURCES
     src/stringf.c
     src/event_queue.c
     src/event_loop.c
-
+    
+    drivers/buttons.c
     drivers/uart.c
     drivers/gpio.c
 )

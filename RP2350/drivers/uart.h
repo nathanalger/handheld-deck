@@ -18,7 +18,7 @@
 typedef enum uart_packet_t
 {
    PKT_PING = 0x01,
-   PKT_GPIO_EVENT
+   BUTTON_EVENT
 } uart_packet_t;
 
 /**

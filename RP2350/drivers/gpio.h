@@ -52,3 +52,4 @@ void gpio_register_callback(
 void gpio_set_enabled(uint8_t gpio, bool enabled);
 
 gpio_handler_t *gpio_get_handler(uint8_t gpio);
+void gpio_enable_events(uint8_t gpio, gpio_event_t events);
