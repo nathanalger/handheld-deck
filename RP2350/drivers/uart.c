@@ -2,7 +2,7 @@
 #include "pico/stdlib.h"
 #include "hardware/sync.h"
 
-static uint8_t seq = 0;
+static volatile uint8_t seq = 0;
 
 void uart_setup()
 {
@@ -31,40 +31,10 @@ uint8_t next_seq()
 
 int uart_putb(uint8_t byte)
 {
+   while (!uart_is_writable(UART_ID))
+      tight_loop_contents();
+
    uart_putc_raw(UART_ID, byte);
-
-   return 0;
-}
-
-int uart_put32(uint32_t value)
-{
-   uint8_t bytes[4];
-
-   bytes[0] = (value >> 0) & 0xFF;
-   bytes[1] = (value >> 8) & 0xFF;
-   bytes[2] = (value >> 16) & 0xFF;
-   bytes[3] = (value >> 24) & 0xFF;
-
-   for (uint8_t i = 0; i < 4; i++)
-   {
-      uart_putb(bytes[i]);
-   }
-
-   return 0;
-}
-
-int uart_put16(uint16_t value)
-{
-   uint8_t bytes[2];
-
-   bytes[0] = (value >> 0) & 0xFF;
-   bytes[1] = (value >> 8) & 0xFF;
-
-   for (uint8_t i = 0; i < 2; i++)
-   {
-      uart_putb(bytes[i]);
-   }
-
    return 0;
 }
 
@@ -101,8 +71,9 @@ int uart_packet(
    uart_putb(UART_SYNC_1);
 
    // Write sequence
-   uart_putb(seq);
-   crc = crc8_i(crc, seq);
+   uint8_t s = next_seq();
+   uart_putb(s);
+   crc = crc8_i(crc, s);
 
    // Type
    uart_putb(type);
@@ -125,7 +96,10 @@ int uart_packet(
    // CRC
    uart_putb(crc);
 
-   // Incrememnt sequence
-   seq = (uint8_t)(seq + 1);
    return 0;
+}
+
+int uart_packet16(uart_packet_t type, uint16_t value)
+{
+   return uart_packet(type, (uint8_t *)&value, sizeof(value));
 }

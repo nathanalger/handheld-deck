@@ -15,7 +15,7 @@ int main()
    while (1)
    {
       gpio_put(LED_PIN, 1);
-      uart_packet(PKT_PING, &payload, 2);
+      uart_packet16(PKT_PING, payload);
       sleep_ms(500);
 
       gpio_put(LED_PIN, 0);
