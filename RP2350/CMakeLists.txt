@@ -11,6 +11,13 @@ set(CMAKE_CXX_STANDARD 17)
 
 pico_sdk_init()
 
+find_program(PICOTOOL picotool)
+
+if(PICOTOOL)
+    message(STATUS "Using installed picotool: ${PICOTOOL}")
+    set(PICO_PICOTOOL_PATH ${PICOTOOL})
+endif()
+
 set(SOURCES
     src/main.c
     src/stringf.c

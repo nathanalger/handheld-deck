@@ -58,3 +58,24 @@ sudo apt install -y usbutils
 sudo apt install -y minicom
 sudo apt install -y clang-format
 ```
+
+## 3. Install Picotools Globally
+
+1. Download local version of picotools by running in a terminal:
+```bash
+cd ~
+git clone https://github.com/raspberrypi/picotool.git
+cd picotool
+git checkout 2.1.1
+```
+
+2. Build and install
+```bash
+mkdir build
+cd build
+
+cmake -DCMAKE_INSTALL_PREFIX=/usr/local ..
+make -j$(nproc)
+
+sudo make install
+```
