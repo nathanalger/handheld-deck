@@ -11,7 +11,14 @@ event_router_t router;
 
 void button_handler(event_t *e, void *user)
 {
+   // Turn off the LED when button is pressed for debugging
+   gpio_put(LED_STATUS_GP, 0);
    uart_packet(PKT_GPIO_EVENT, (uint8_t *)"A", 1);
+   // Turn LED back on after sending packet
+   gpio_put(LED_STATUS_GP, 1);
+   sleep_ms(500);
+   // Add debug output to verify function is called
+   uart_packet(PKT_PING, (uint8_t *)"B", 1); // This will help confirm if handler is called
 }
 
 int main()
