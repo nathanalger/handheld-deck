@@ -27,6 +27,15 @@ static void gpio_irq_dispatch(uint8_t gpio, uint32_t hardware_events)
    if (gpio >= MAX_GPIO_PINS)
       return;
 
+   static uint32_t last_irq_time[MAX_GPIO_PINS] = {0};
+   uint32_t now = to_ms_since_boot(get_absolute_time());
+
+   // Ignore physical bounces within 50ms of the last valid edge
+   if (now - last_irq_time[gpio] < 50)
+      return;
+
+   last_irq_time[gpio] = now;
+
    gpio_handler_t *h = &handlers[gpio];
 
    if (!h->enabled)
@@ -62,9 +71,6 @@ void gpio_init_driver(void)
       handlers[i].enabled = false;
       handlers[i].subscribed_events = 0;
    }
-
-   gpio_set_irq_callback(gpio_irq_handler);
-   irq_set_enabled(IO_IRQ_BANK0, true);
 }
 
 void gpio_register_callback(
@@ -89,7 +95,7 @@ void gpio_register_callback(
    if (events & GPIO_EVENT_FALLING)
       hw_events |= GPIO_IRQ_EDGE_FALL;
 
-   gpio_set_irq_enabled(gpio, hw_events, true);
+   gpio_set_irq_enabled_with_callback(gpio, hw_events, true, gpio_irq_handler);
 }
 
 void gpio_set_enabled(uint8_t gpio, bool enabled)
