@@ -15,11 +15,11 @@
 
 #define UART_MAX_PAYLOAD 256
 
-typedef uint8_t uart_packet_t;
-enum
+typedef enum uart_packet_t
 {
-   PKT_PING = 0x01
-};
+   PKT_PING = 0x01,
+   PKT_GPIO_EVENT
+} uart_packet_t;
 
 /**
  * Initializes UART for peripheral communication. Prepares GPIO function and format. Always uses UART0.
@@ -37,7 +37,7 @@ int uart_putb(uint8_t byte);
 uint8_t crc8_i(uint8_t crc, uint8_t byte);
 
 /**
- * Sends a structured packet through the UART0 BUS, little endian.
+ * Sends a structured packet through the UART0 BUS, little endian. Size is in bytes.
  */
 int uart_packet(
     uart_packet_t type,

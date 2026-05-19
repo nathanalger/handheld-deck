@@ -49,6 +49,6 @@ uint32_t strlen_32(const char *str)
       bytes_checked++;
    }
 
-   // No null terminator found across the entire 32-bit space
+   // No null terminator found
    return 0xffffffff;
 }

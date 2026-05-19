@@ -14,7 +14,11 @@ pico_sdk_init()
 set(SOURCES
     src/main.c
     src/stringf.c
+    src/event_queue.c
+    src/event_loop.c
+
     drivers/uart.c
+    drivers/gpio.c
 )
 
 add_executable(handheld_rp2350
@@ -29,6 +33,8 @@ target_include_directories(handheld_rp2350 PRIVATE
 
 target_link_libraries(handheld_rp2350
     pico_stdlib
+    hardware_gpio
+    hardware_irq
 )
 
 pico_enable_stdio_uart(handheld_rp2350 0)
