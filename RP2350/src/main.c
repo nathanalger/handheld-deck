@@ -16,11 +16,17 @@ void button_handler(event_t *e, void *user)
 
 int main()
 {
+   // Prepare LED Status Pin
+   gpio_init(LED_STATUS_GP);
+   gpio_set_dir(LED_STATUS_GP, GPIO_OUT);
+   gpio_put(LED_STATUS_GP, 1);
+
    event_queue_init(&system_events);
    event_router_init(&router);
    gpio_init_driver();
    uart_setup();
 
+   gpio_register_callback(2, GPIO_EVENT_RISING, NULL, NULL);
    event_router_register(&router, EVENT_GPIO, 2, button_handler, NULL);
 
    gpio_set_dir(2, GPIO_IN);

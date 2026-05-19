@@ -5,6 +5,7 @@
 
 #define GPIO_MAX_PINS 32
 #define GPIO_EVENT_QUEUE_SIZE 32
+#define LED_STATUS_GP 25
 
 typedef enum
 {
