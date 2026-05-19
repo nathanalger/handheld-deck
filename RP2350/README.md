@@ -45,7 +45,6 @@ a. Install the standard build tools in the terminal
 ```bash
 sudo apt update
 sudo apt install -y \
-  git \
   cmake \
   ninja-build \
   gcc-arm-none-eabi \
@@ -66,7 +65,6 @@ sudo apt install -y clang-format
 cd ~
 git clone https://github.com/raspberrypi/picotool.git
 cd picotool
-git checkout 2.1.1
 ```
 
 2. Build and install
