@@ -20,9 +20,9 @@ void uart_setup()
 
 void uart_putb(uint8_t byte)
 {
-   uart_hw_t *hw = uart_get_hw(uart0);
+   uart_hw_t *hw = uart_get_hw(UART_ID);
 
-   while (hw->fr & UART_UARTFR_TXFF_BITS)
+   while (!uart_is_writable(UART_ID))
    {
       tight_loop_contents();
    }

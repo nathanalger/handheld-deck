@@ -2,6 +2,7 @@
 
 #include <stdint.h>
 #include "hardware/uart.h"
+#include "hardware/structs/uart.h"
 
 #define UART_ID uart0
 #define BAUD_RATE 115200
