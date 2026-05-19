@@ -1,6 +1,7 @@
 #include "gpio.h"
 #include "event_queue.h"
 
+#include "pico/time.h"
 #include "hardware/gpio.h"
 #include "hardware/irq.h"
 
