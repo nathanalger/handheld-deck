@@ -3,10 +3,9 @@
   "cmake.generator": "Ninja",
   "cmake.buildDirectory": "${workspaceFolder}/RP2350/build",
 
-  "C_Cpp.default.compileCommands": "${workspaceFolder}/RP2350/build/compile_commands.json",
-
   "C_Cpp.default.configurationProvider": "ms-vscode.cmake-tools",
   "cmake.sourceDirectory": "/mnt/d/Development/handheld-deck/RP2350",
+  "C_Cpp.default.compileCommands": "${workspaceFolder}/RP2350/build/compile_commands.json",
 
   "editor.formatOnSave": true,
   "editor.defaultFormatter": "ms-vscode.cpptools",

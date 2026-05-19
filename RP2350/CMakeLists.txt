@@ -11,12 +11,17 @@ set(CMAKE_CXX_STANDARD 17)
 
 pico_sdk_init()
 
-add_executable(handheld_rp2350
+set(SOURCES
     src/main.c
+    drivers/uart.c
+)
+
+add_executable(handheld_rp2350
+    ${SOURCES}
 )
 
 target_include_directories(handheld_rp2350 PRIVATE
-    ${CMAKE_CURRENT_LIST_DIR}
+    ${CMAKE_CURRENT_LIST_DIR}/src
     ${CMAKE_CURRENT_LIST_DIR}/drivers
     ${CMAKE_CURRENT_LIST_DIR}/lib
 )
@@ -24,5 +29,8 @@ target_include_directories(handheld_rp2350 PRIVATE
 target_link_libraries(handheld_rp2350
     pico_stdlib
 )
+
+pico_enable_stdio_usb(handheld_rp2350 1)
+pico_enable_stdio_uart(handheld_rp2350 1)
 
 pico_add_extra_outputs(handheld_rp2350)
