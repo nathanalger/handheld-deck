@@ -30,7 +30,7 @@ target_link_libraries(handheld_rp2350
     pico_stdlib
 )
 
+pico_enable_stdio_uart(handheld_rp2350 0)
 pico_enable_stdio_usb(handheld_rp2350 1)
-pico_enable_stdio_uart(handheld_rp2350 1)
 
 pico_add_extra_outputs(handheld_rp2350)
