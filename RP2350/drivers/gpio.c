@@ -6,6 +6,7 @@
 #include "hardware/irq.h"
 
 #define MAX_GPIO_PINS 32
+#define GPIO_DEBOUNCE_MS 15
 
 extern event_queue_t system_events;
 static gpio_handler_t handlers[MAX_GPIO_PINS];
@@ -28,24 +29,39 @@ static void gpio_irq_dispatch(uint8_t gpio, uint32_t hardware_events)
    if (gpio >= MAX_GPIO_PINS)
       return;
 
-   static uint32_t last_irq_time[MAX_GPIO_PINS] = {0};
-   uint32_t now = to_ms_since_boot(get_absolute_time());
-
-   // Ignore physical bounces within 50ms of the last valid edge
-   if (now - last_irq_time[gpio] < 50)
-      return;
-
-   last_irq_time[gpio] = now;
+   static uint32_t last_rise_time[MAX_GPIO_PINS] = {0};
+   static uint32_t last_fall_time[MAX_GPIO_PINS] = {0};
 
    gpio_handler_t *h = &handlers[gpio];
 
    if (!h->enabled)
       return;
 
+   uint32_t now = to_ms_since_boot(get_absolute_time());
+
    gpio_event_t events = translate_events(hardware_events);
 
    // filter by subscription
    events &= h->subscribed_events;
+
+   if (events == 0)
+      return;
+
+   if (events & GPIO_EVENT_RISING)
+   {
+      if (now - last_rise_time[gpio] < GPIO_DEBOUNCE_MS)
+         events &= ~GPIO_EVENT_RISING;
+      else
+         last_rise_time[gpio] = now;
+   }
+
+   if (events & GPIO_EVENT_FALLING)
+   {
+      if (now - last_fall_time[gpio] < GPIO_DEBOUNCE_MS)
+         events &= ~GPIO_EVENT_FALLING;
+      else
+         last_fall_time[gpio] = now;
+   }
 
    if (events == 0)
       return;
