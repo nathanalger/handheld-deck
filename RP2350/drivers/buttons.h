@@ -18,4 +18,9 @@ bool button_is_pressed(event_t *e);
  */
 bool button_is_released(event_t *e);
 
+/**
+ * Sends a UART message with the data being the source pin for both up and down events.
+ */
+void default_button_handler(event_t *e, void *user);
+
 #endif
