@@ -17,8 +17,9 @@
 
 typedef enum uart_packet_t
 {
-   PKT_PING = 0x01,
-   BUTTON_EVENT
+    PKT_PING = 0x01,
+    BUTTON_UP,
+    BUTTON_DOWN
 } uart_packet_t;
 
 /**

@@ -15,12 +15,12 @@ void button_a_handler(event_t *e, void *user)
    if (button_is_pressed(e))
    {
       gpio_put(LED_STATUS_GP, 0);
-      uart_packet(BUTTON_EVENT, (uint8_t *)"DOWN", 4);
+      uart_packet(BUTTON_DOWN, (uint8_t *)"DOWN", 4);
    }
    else if (button_is_released(e))
    {
       gpio_put(LED_STATUS_GP, 1);
-      uart_packet(BUTTON_EVENT, (uint8_t *)"UP", 2);
+      uart_packet(BUTTON_UP, (uint8_t *)"UP", 2);
    }
 }
 
