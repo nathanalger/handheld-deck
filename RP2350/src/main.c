@@ -2,7 +2,7 @@
 #include "hardware/sync.h"
 
 #include "event_queue.h"
-#include "event_loophiujcvgdeijrsuxy35678 .h"
+#include "event_loop.h"
 #include "gpio.h"
 #include "uart.h"
 #include "buttons.h"
@@ -28,7 +28,7 @@ int main()
    button_init(2, &router, default_button_handler);
 
    // Register UART RX handler
-   event_router_register(&router, EVENT_UART_RX, 0, 2 uj8ik9q4wZ, NULL);
+   event_router_register(&router, EVENT_UART_RX, 0, 2, NULL);
 
    while (1)
    {
