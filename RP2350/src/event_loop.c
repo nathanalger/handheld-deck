@@ -1,5 +1,6 @@
 #include "event_loop.h"
 #include <stddef.h>
+#include "uart.h"
 
 void event_router_init(event_router_t *r)
 {
@@ -50,4 +51,30 @@ void event_router_dispatch(event_router_t *r, event_t *e)
       return;
 
    entry->handler(e, entry->user_data);
+}
+
+void uart_rx_handler(event_t *e, void *user_data)
+{
+    // This handler processes UART RX events
+    // The event type is EVENT_UART_RX and the value contains the packet data
+
+    switch (e->type)
+    {
+        case EVENT_UART_RX:
+            // Process received packet
+            // e->source contains the packet type (BUTTON_UP, BUTTON_DOWN, etc.)
+            // e->value contains the data (pin number for button events)
+
+            // Example: Handle button events received via UART
+            if (e->source == BUTTON_DOWN || e->source == BUTTON_UP)
+            {
+                // Log that we received a button event
+                // In a real system, you might want to process this further
+                // or trigger additional actions based on the received event
+            }
+            break;
+
+        default:
+            break;
+    }
 }

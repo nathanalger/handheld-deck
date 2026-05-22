@@ -39,4 +39,9 @@ void event_router_register(
     void *user_data);
 void event_router_dispatch(event_router_t *r, event_t *e);
 
+/**
+ * Handler for UART RX events
+ */
+void uart_rx_handler(event_t *e, void *user_data);
+
 #endif

@@ -23,6 +23,18 @@ typedef enum uart_packet_t
 } uart_packet_t;
 
 /**
+ * Structure to hold received packet data
+ */
+typedef struct
+{
+    uart_packet_t type;
+    uint16_t value;
+    uint8_t size;
+    uint8_t crc;
+    uint8_t seq;
+} rx_packet_t;
+
+/**
  * Initializes UART for peripheral communication. Prepares GPIO function and format. Always uses UART0.
  */
 void uart_setup();
@@ -49,3 +61,20 @@ int uart_packet(
  * Sends a structured 16-bit packet through the UART0 BUS, little endian.
  */
 int uart_packet16(uart_packet_t type, uint16_t value);
+
+/**
+ * Initialize UART RX state machine
+ */
+void uart_rx_init(void);
+
+/**
+ * Process incoming UART data and return complete packets
+ * Returns 1 if packet is ready, 0 if not yet complete, -1 if error
+ */
+int uart_rx_process(void);
+
+/**
+ * Get the next complete received packet
+ * Returns 1 if packet available, 0 if none
+ */
+int uart_rx_get_packet(rx_packet_t *packet);

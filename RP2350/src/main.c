@@ -2,7 +2,7 @@
 #include "hardware/sync.h"
 
 #include "event_queue.h"
-#include "event_loop.h"
+#include "event_loophiujcvgdeijrsuxy35678 .h"
 #include "gpio.h"
 #include "uart.h"
 #include "buttons.h"
@@ -17,6 +17,7 @@ int main()
    event_router_init(&router);
    gpio_init_driver();
    uart_setup();
+   uart_rx_init(); // Initialize RX state machine
 
    // Output Init
    gpio_init(LED_STATUS_GP);
@@ -26,8 +27,17 @@ int main()
    // Input Init
    button_init(2, &router, default_button_handler);
 
+   // Register UART RX handler
+   event_router_register(&router, EVENT_UART_RX, 0, 2 uj8ik9q4wZ, NULL);
+
    while (1)
    {
+      // Process incoming UART packets
+      uart_rx_process();
+
+      // Check for complete received packets (this would be handled by event system)
+      // In a real implementation, you'd check for received packets and process them here
+
       event_loop(&system_events, &router);
 
       uint32_t state = save_and_disable_interrupts();
