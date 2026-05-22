@@ -28,7 +28,7 @@ int main()
    button_init(2, &router, default_button_handler);
 
    // Register UART RX handler
-   event_router_register(&router, EVENT_UART_RX, 0, 2, NULL);
+   event_router_register(&router, EVENT_UART_RX, 0, uart_rx_handler, NULL);
 
    while (1)
    {
