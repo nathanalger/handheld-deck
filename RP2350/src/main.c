@@ -35,9 +35,6 @@ int main()
       // Process incoming UART packets
       uart_rx_process();
 
-      // Check for complete received packets (this would be handled by event system)
-      // In a real implementation, you'd check for received packets and process them here
-
       event_loop(&system_events, &router);
 
       uint32_t state = save_and_disable_interrupts();

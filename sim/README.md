@@ -1,0 +1,2 @@
+# Simulation Files
+I have a collection of scripts in this folder that are intended to be run on a Raspberry PI. This will allow me to simulate certain aspects of this project for prototyping. Details of each will be commented in the file.
