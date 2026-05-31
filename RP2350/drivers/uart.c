@@ -151,6 +151,7 @@ int uart_rx_process(void)
         case RX_STATE_SYNC_0:
             if (byte == UART_SYNC_0)
             {
+                rx_actual_crc = 0;
                 rx_state = RX_STATE_SYNC_1;
             }
             break;
