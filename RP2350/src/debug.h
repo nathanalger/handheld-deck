@@ -18,5 +18,6 @@ int debug_puts(const char *str);
 void debug_u8(uint8_t value);
 void debug_u16(uint16_t value);
 void debug_u32(uint32_t value);
+void debug_hex8(uint8_t value);
 
 #endif
