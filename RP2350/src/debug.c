@@ -2,6 +2,8 @@
 
 #include "pico/stdlib.h"
 
+static const char hex[] = "0123456789ABCDEF";
+
 void debug_init(void)
 {
    uart_init(DEBUG_UART_ID, DEBUG_BAUD_RATE);
@@ -73,4 +75,10 @@ void debug_u16(uint16_t value)
 void debug_u32(uint32_t value)
 {
    debug_print_unsigned(value);
+}
+
+void debug_hex8(uint8_t value)
+{
+   debug_putb(hex[(value >> 4) & 0x0F]);
+   debug_putb(hex[value & 0x0F]);
 }

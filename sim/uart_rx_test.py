@@ -66,11 +66,12 @@ def main():
     seq = 0
 
     while True:
-        value = int(input("Value: "))
-        payload = struct.pack("<H", value)
-        pkt = build_packet(seq, PKT_PING, payload)
-        ser.write(pkt)
-        print("Sent:", pkt.hex(" "))
+        pkt_type = int(input("Type: "), 0)
+        value = int(input("Value: "), 0)    
+        payload = struct.pack("<H", value)  
+        pkt = build_packet(seq, pkt_type, payload)  
+        ser.write(pkt)  
+        print("Sent:", pkt.hex(" "))    
         seq = (seq + 1) & 0xFF
 
 

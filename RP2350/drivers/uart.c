@@ -228,6 +228,19 @@ int uart_rx_process(void)
             // Verify CRC
             if (rx_actual_crc == rx_expected_crc)
             {
+                debug_puts("VALID PACKET\n");
+
+                debug_puts("SEQ=");
+                debug_u8(rx_seq);
+
+                debug_puts(" TYPE=");
+                debug_u8(rx_type);
+
+                debug_puts(" SIZE=");
+                debug_u16(rx_payload_size);
+
+                debug_puts("\n");
+
                 // Valid packet
                 rx_packet.type = (uart_packet_t)rx_type;
                 rx_packet.value = 0;
@@ -296,7 +309,9 @@ int uart_rx_poll(event_queue_t *q)
             .source = packet.type,
             .value = packet.value};
 
-        debug_puts("Recieved UART packet successfully.\n");
+        debug_puts("UART RX: Type 0x");
+        debug_hex8(packet.type);
+        debug_puts("\n");
 
         event_push(q, e);
     }
