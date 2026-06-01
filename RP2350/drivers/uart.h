@@ -88,10 +88,3 @@ int uart_rx_get_packet(rx_packet_t *packet);
  * Processes any available UART RX packets and pushes them to the event queue
  */
 int uart_rx_poll(event_queue_t *q);
-
-/**
- * Handles UART RX interrupts
- */
-static void uart_irq_handler(void);
-
-bool uart_rx_pending(void);

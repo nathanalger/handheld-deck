@@ -1,21 +1,12 @@
 #include "uart.h"
 #include "pico/stdlib.h"
 #include "hardware/sync.h"
-#include "hardware/irq.h"
 #include "event_loop.h"
 #include "debug.h"
 
-#define UART_RX_RING_SIZE 512
-
 static volatile uint8_t seq = 0;
 
-static volatile uint8_t rx_ring[UART_RX_RING_SIZE];
-static volatile uint16_t rx_head = 0;
-static volatile uint16_t rx_tail = 0;
-static volatile uint32_t rx_dropped = 0;
-
-extern volatile bool uart_woke;
-
+// RX state machine variables
 static enum {
     RX_STATE_SYNC_0,
     RX_STATE_SYNC_1,
@@ -30,17 +21,15 @@ static enum {
 static uint8_t rx_buffer[UART_MAX_PAYLOAD];
 static uint16_t rx_payload_size = 0;
 static uint16_t rx_payload_index = 0;
+static uint8_t rx_expected_crc = 0;
 static uint8_t rx_actual_crc = 0;
 static uint8_t rx_seq = 0;
 static uint8_t rx_type = 0;
-
 static rx_packet_t rx_packet;
 static volatile bool rx_packet_ready = false;
 static volatile bool rx_packet_error = false;
 
-static void uart_irq_handler(void);
-
-void uart_setup(void)
+void uart_setup()
 {
     uart_init(UART_ID, BAUD_RATE);
 
@@ -48,18 +37,13 @@ void uart_setup(void)
     gpio_set_function(UART_RX_PIN, GPIO_FUNC_UART);
 
     uart_set_format(UART_ID, 8, 1, UART_PARITY_NONE);
+
     uart_set_fifo_enabled(UART_ID, true);
 
     while (uart_is_readable(UART_ID))
     {
         uart_getc(UART_ID);
     }
-
-    irq_set_exclusive_handler(UART0_IRQ, uart_irq_handler);
-    irq_set_priority(UART0_IRQ, 1);
-    irq_set_enabled(UART0_IRQ, true);
-
-    uart_set_irq_enables(UART_ID, true, false);
 }
 
 void uart_rx_init(void)
@@ -67,12 +51,13 @@ void uart_rx_init(void)
     rx_state = RX_STATE_SYNC_0;
     rx_payload_size = 0;
     rx_payload_index = 0;
+    rx_expected_crc = 0;
     rx_actual_crc = 0;
     rx_packet_ready = false;
     rx_packet_error = false;
 }
 
-uint8_t next_seq(void)
+uint8_t next_seq()
 {
     uint32_t save = save_and_disable_interrupts();
     uint8_t s = seq++;
@@ -93,7 +78,7 @@ uint8_t crc8_i(uint8_t crc, uint8_t byte)
 {
     crc ^= byte;
 
-    for (uint8_t i = 0; i < 8; i++)
+    for (uint8_t j = 0; j < 8; j++)
     {
         if (crc & 0x80)
             crc = (crc << 1) ^ 0x07;
@@ -104,39 +89,49 @@ uint8_t crc8_i(uint8_t crc, uint8_t byte)
     return crc;
 }
 
-int uart_packet(uart_packet_t type, uint8_t *payload, uint16_t size)
+int uart_packet(
+    uart_packet_t type,
+    uint8_t *payload,
+    uint16_t size)
 {
     if (size > UART_MAX_PAYLOAD)
         return -1;
 
-    uint8_t crc = 0;
+    uint8_t crc = 0x00;
 
     uint8_t size_lo = size & 0xFF;
     uint8_t size_hi = (size >> 8) & 0xFF;
 
+    // Sync bytes
     uart_putb(UART_SYNC_0);
     uart_putb(UART_SYNC_1);
 
+    // Write sequence
     uint8_t s = next_seq();
     uart_putb(s);
     crc = crc8_i(crc, s);
 
+    // Type
     uart_putb(type);
     crc = crc8_i(crc, type);
 
+    // Size
     uart_putb(size_lo);
     crc = crc8_i(crc, size_lo);
 
     uart_putb(size_hi);
     crc = crc8_i(crc, size_hi);
 
+    // Payload
     for (uint16_t i = 0; i < size; i++)
     {
         uart_putb(payload[i]);
         crc = crc8_i(crc, payload[i]);
     }
 
+    // CRC
     uart_putb(crc);
+
     return 0;
 }
 
@@ -147,10 +142,10 @@ int uart_packet16(uart_packet_t type, uint16_t value)
 
 int uart_rx_process(void)
 {
-    while (rx_tail != rx_head)
+    // Check if data is available
+    while (uart_is_readable(UART_ID))
     {
-        uint8_t byte = rx_ring[rx_tail];
-        rx_tail = (rx_tail + 1) % UART_RX_RING_SIZE;
+        uint8_t byte = uart_getc(UART_ID);
 
         switch (rx_state)
         {
@@ -158,17 +153,20 @@ int uart_rx_process(void)
             if (byte == UART_SYNC_0)
             {
                 rx_actual_crc = 0;
-                rx_payload_index = 0;
-                rx_payload_size = 0;
                 rx_state = RX_STATE_SYNC_1;
             }
             break;
 
         case RX_STATE_SYNC_1:
             if (byte == UART_SYNC_1)
+            {
                 rx_state = RX_STATE_SEQ;
+            }
             else
+            {
+                // Reset if we don't get the expected sync byte
                 rx_state = RX_STATE_SYNC_0;
+            }
             break;
 
         case RX_STATE_SEQ:
@@ -195,54 +193,74 @@ int uart_rx_process(void)
 
             if (rx_payload_size > UART_MAX_PAYLOAD)
             {
+                // Error: payload too large
                 rx_packet_error = true;
                 rx_state = RX_STATE_SYNC_0;
-                rx_actual_crc = 0;
             }
             else if (rx_payload_size == 0)
             {
+                // No payload, go directly to CRC
                 rx_state = RX_STATE_CRC;
             }
             else
             {
+                // Expect payload
                 rx_payload_index = 0;
                 rx_state = RX_STATE_PAYLOAD;
             }
             break;
 
         case RX_STATE_PAYLOAD:
-            if (rx_payload_index < UART_MAX_PAYLOAD)
+            rx_buffer[rx_payload_index++] = byte;
+            rx_actual_crc = crc8_i(rx_actual_crc, byte);
+
+            if (rx_payload_index >= rx_payload_size)
             {
-                rx_buffer[rx_payload_index++] = byte;
-                rx_actual_crc = crc8_i(rx_actual_crc, byte);
-            }
-            else
-            {
-                rx_state = RX_STATE_SYNC_0;
-                rx_actual_crc = 0;
+                rx_state = RX_STATE_CRC;
             }
             break;
 
         case RX_STATE_CRC:
-            if (rx_actual_crc == byte)
+            rx_expected_crc = byte;
+
+            // Verify CRC
+            if (rx_actual_crc == rx_expected_crc)
             {
+                debug_puts("VALID PACKET\n");
+
+                debug_puts("SEQ=");
+                debug_u8(rx_seq);
+
+                debug_puts(" TYPE=");
+                debug_u8(rx_type);
+
+                debug_puts(" SIZE=");
+                debug_u16(rx_payload_size);
+
+                debug_puts("\n");
+
+                // Valid packet
                 rx_packet.type = (uart_packet_t)rx_type;
+                rx_packet.value = 0;
+
+                // Copy payload to value if it's a 16-bit value
+                if (rx_payload_size >= 2)
+                {
+                    rx_packet.value = (rx_buffer[1] << 8) | rx_buffer[0];
+                }
+                else if (rx_payload_size == 1)
+                {
+                    rx_packet.value = rx_buffer[0];
+                }
+
                 rx_packet.size = rx_payload_size;
                 rx_packet.seq = rx_seq;
-
-                rx_packet.value = 0;
-                if (rx_payload_size >= 2)
-                    rx_packet.value = (rx_buffer[1] << 8) | rx_buffer[0];
-                else if (rx_payload_size == 1)
-                    rx_packet.value = rx_buffer[0];
-
                 rx_packet_ready = true;
-                rx_packet_error = false;
             }
             else
             {
+                // CRC error
                 rx_packet_error = true;
-                rx_actual_crc = 0;
             }
 
             rx_state = RX_STATE_SYNC_0;
@@ -250,23 +268,30 @@ int uart_rx_process(void)
         }
     }
 
+    // Return status
     if (rx_packet_ready)
-        return 1;
-    if (rx_packet_error)
-        return -1;
-    return 0;
+    {
+        return 1; // Packet ready
+    }
+    else if (rx_packet_error)
+    {
+        return -1; // Error
+    }
+    else
+    {
+        return 0; // No packet yet
+    }
 }
 
 int uart_rx_get_packet(rx_packet_t *packet)
 {
-    if (rx_packet_ready && packet)
+    if (rx_packet_ready && packet != NULL)
     {
         *packet = rx_packet;
         rx_packet_ready = false;
-        rx_packet_error = false;
-        return 1;
+        return 1; // Packet available
     }
-    return 0;
+    return 0; // No packet available
 }
 
 int uart_rx_poll(event_queue_t *q)
@@ -290,31 +315,4 @@ int uart_rx_poll(event_queue_t *q)
     }
 
     return 0;
-}
-
-static void uart_irq_handler(void)
-{
-    uart_woke = true;
-
-    while (uart_is_readable(UART_ID))
-    {
-        uint8_t byte = uart_getc(UART_ID);
-
-        uint16_t next = (rx_head + 1) % UART_RX_RING_SIZE;
-
-        if (next != rx_tail)
-        {
-            rx_ring[rx_head] = byte;
-            rx_head = next;
-        }
-        else
-        {
-            rx_dropped++;
-        }
-    }
-}
-
-bool uart_rx_pending(void)
-{
-    return rx_head != rx_tail;
 }
