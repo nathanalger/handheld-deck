@@ -65,18 +65,13 @@ def main():
 
     seq = 0
 
-   while True:
-      value = int(input("Value: "))
-
-      payload = struct.pack("<H", value)
-
-      pkt = build_packet(seq, PKT_PING, payload)
-
-      ser.write(pkt)
-
-      print("Sent:", pkt.hex(" "))
-
-      seq = (seq + 1) & 0xFF
+    while True:
+        value = int(input("Value: "))
+        payload = struct.pack("<H", value)
+        pkt = build_packet(seq, PKT_PING, payload)
+        ser.write(pkt)
+        print("Sent:", pkt.hex(" "))
+        seq = (seq + 1) & 0xFF
 
 
 if __name__ == "__main__":
