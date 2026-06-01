@@ -19,6 +19,9 @@ int debug_putb(uint8_t byte)
    while (!uart_is_writable(DEBUG_UART_ID))
       tight_loop_contents();
 
+   if (byte == '\n')
+      uart_putc_raw(DEBUG_UART_ID, '\r');
+
    uart_putc_raw(DEBUG_UART_ID, byte);
 
    return 0;
