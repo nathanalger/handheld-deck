@@ -2,6 +2,7 @@
 #include "pico/stdlib.h"
 #include "hardware/sync.h"
 #include "event_loop.h"
+#include "debug.h"
 
 static volatile uint8_t seq = 0;
 
