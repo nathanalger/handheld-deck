@@ -49,9 +49,8 @@ int main()
       uint32_t state = save_and_disable_interrupts();
       if (event_empty(&system_events))
       {
-         // Commented for debugging. Not for production. TODO
-         // debug_puts("Event loop empty. Waiting for interrupt.\n");
-         //__wfi();
+         debug_puts("Event loop empty. Waiting for interrupt.\n");
+         _wfi();
       }
       restore_interrupts(state);
    }

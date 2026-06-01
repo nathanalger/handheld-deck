@@ -145,8 +145,6 @@ int uart_rx_process(void)
     // Check if data is available
     while (uart_is_readable(UART_ID))
     {
-        debug_puts("UART BYTE\n");
-
         uint8_t byte = uart_getc(UART_ID);
 
         switch (rx_state)
