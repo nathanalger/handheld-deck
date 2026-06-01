@@ -50,7 +50,7 @@ int main()
       if (event_empty(&system_events))
       {
          debug_puts("Event loop empty. Waiting for interrupt.\n");
-         __wfi();
+         //__wfi(); Commented for debugging. Not for production
       }
       restore_interrupts(state);
    }
