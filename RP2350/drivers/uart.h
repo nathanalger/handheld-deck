@@ -1,6 +1,7 @@
 #pragma once
 
 #include <stdint.h>
+#include "event_queue.h"
 #include "hardware/uart.h"
 #include "hardware/structs/uart.h"
 
@@ -17,9 +18,13 @@
 
 typedef enum uart_packet_t
 {
-    PKT_PING = 0x01,
+    // PICO TX
+    PERIF_PKT_PING = 0x01,
     BUTTON_UP,
-    BUTTON_DOWN
+    BUTTON_DOWN,
+
+    // CONTROLLER TX
+    COMPUTE_PKT_PING,
 } uart_packet_t;
 
 /**
@@ -78,3 +83,8 @@ int uart_rx_process(void);
  * Returns 1 if packet available, 0 if none
  */
 int uart_rx_get_packet(rx_packet_t *packet);
+
+/**
+ * Processes any available UART RX packets and pushes them to the event queue
+ */
+int uart_rx_poll(event_queue_t *q);

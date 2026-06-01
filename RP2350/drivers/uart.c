@@ -279,3 +279,24 @@ int uart_rx_get_packet(rx_packet_t *packet)
     }
     return 0; // No packet available
 }
+
+int uart_rx_poll(event_queue_t *q)
+{
+    uart_rx_process();
+
+    rx_packet_t packet;
+
+    while (uart_rx_get_packet(&packet))
+    {
+        event_t e = {
+            .type = EVENT_UART_RX,
+            .source = packet.type,
+            .value = packet.value};
+
+        debug_puts("Recieved UART packet successfully.\n");
+
+        event_push(q, e);
+    }
+
+    return 0;
+}
