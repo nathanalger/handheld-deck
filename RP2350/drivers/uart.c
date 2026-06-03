@@ -3,6 +3,7 @@
 #include "hardware/sync.h"
 #include "event_loop.h"
 #include "debug.h"
+#include "hardware/irq.h"
 
 static volatile uint8_t seq = 0;
 
@@ -29,6 +30,14 @@ static rx_packet_t rx_packet;
 static volatile bool rx_packet_ready = false;
 static volatile bool rx_packet_error = false;
 
+void uart_irq_handler(void)
+{
+    // Process incoming UART data when interrupt occurs
+    uart_rx_process();
+    uart_rx_poll(NULL); // We don't need to push to a specific queue here,
+                        // as uart_rx_poll() already pushes to the global system_events queue
+}
+
 void uart_setup()
 {
     uart_init(UART_ID, BAUD_RATE);
@@ -39,6 +48,13 @@ void uart_setup()
     uart_set_format(UART_ID, 8, 1, UART_PARITY_NONE);
 
     uart_set_fifo_enabled(UART_ID, true);
+
+    // Enable UART RX interrupt to wake system from WFI
+    uart_set_irq_enables(UART_ID, true, false); // true = RX interrupt enabled, false = TX interrupt disabled
+
+    // Register our interrupt handler via the IRQ system
+    irq_set_exclusive_handler(UART0_IRQ, uart_irq_handler);
+    irq_set_enabled(UART0_IRQ, true);
 
     while (uart_is_readable(UART_ID))
     {

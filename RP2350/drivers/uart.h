@@ -4,6 +4,7 @@
 #include "event_queue.h"
 #include "hardware/uart.h"
 #include "hardware/structs/uart.h"
+#include "hardware/irq.h"
 
 #define UART_ID uart0
 #define BAUD_RATE 115200
@@ -88,3 +89,8 @@ int uart_rx_get_packet(rx_packet_t *packet);
  * Processes any available UART RX packets and pushes them to the event queue
  */
 int uart_rx_poll(event_queue_t *q);
+
+/**
+ * UART interrupt handler for RX data
+ */
+void uart_irq_handler(void);
