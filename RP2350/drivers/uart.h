@@ -19,13 +19,13 @@
 
 typedef enum uart_packet_t
 {
-    // PICO TX - 0x0-CX
-    PERIF_PKT_PING = 0x01,
-    BUTTON_UP = 0x02,
-    BUTTON_DOWN = 0x03,
+    // PICO TX - 0x0+X
+    COMPUTE_PKT_PING = 0x01,
 
     // CONTROLLER TX - 0xC+X
-    COMPUTE_PKT_PING = 0xC1,
+    PERIF_PKT_PING = 0xC1,
+    BUTTON_UP = 0xC2,
+    BUTTON_DOWN = 0xC3,
 } uart_packet_t;
 
 /**

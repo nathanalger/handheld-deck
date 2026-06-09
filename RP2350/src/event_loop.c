@@ -28,14 +28,19 @@ void event_loop(event_queue_t *q, event_router_t *router)
       case -1:
          /* type or source exceeds maximum in memory */
          debug_puts("Failure upon event dispatch: type or source exceeds maximum size in memory.\n");
+         debug_puts("Type:");
+         debug_hex8(e.type);
+         debug_puts("\nID/Source:");
+         debug_hex8(e.source);
+         debug_puts("\n");
          break;
       case 0:
          /* failed to locate a handler */
-         debug_puts("Failure upon event dispatch: no suitable handler found. Searching for: table[");
+         debug_puts("Failure upon event dispatch: no suitable handler found. \nSearching for: table[");
          debug_hex8(e.type);
          debug_puts("][");
          debug_hex8(e.source);
-         debug_puts("].");
+         debug_puts("].\n");
          break;
       case 1:
          /* successfully executed handler */
