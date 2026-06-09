@@ -41,7 +41,7 @@ int main()
    while (1)
    {
       // Process incoming UART packets
-      uart_rx_process();
+      // uart_rx_process();
       uart_rx_poll(&system_events);
 
       event_loop(&system_events, &router);
