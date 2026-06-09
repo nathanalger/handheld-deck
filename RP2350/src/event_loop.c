@@ -34,7 +34,8 @@ void event_loop(event_queue_t *q, event_router_t *router)
          debug_puts("Failure upon event dispatch: no suitable handler found. Searching for: table[");
          debug_hex8(e.type);
          debug_puts("][");
-         debug_hex8("].");
+         debug_hex8(e.source);
+         debug_puts("].");
          break;
       case 1:
          /* successfully executed handler */
