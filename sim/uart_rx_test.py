@@ -4,9 +4,6 @@ import struct
 SYNC0 = 0xAA
 SYNC1 = 0x55
 
-PKT_PING = 0x01
-
-
 def crc8(crc, byte):
     crc ^= byte
 

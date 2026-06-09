@@ -239,20 +239,16 @@ int uart_rx_process(void)
         case RX_STATE_CRC:
             rx_expected_crc = byte;
 
-            // Verify CRC
             if (rx_actual_crc == rx_expected_crc)
             {
                 debug_puts("VALID PACKET\n");
 
                 debug_puts("SEQ=");
                 debug_u8(rx_seq);
-
                 debug_puts(" TYPE=");
                 debug_u8(rx_type);
-
                 debug_puts(" SIZE=");
                 debug_u16(rx_payload_size);
-
                 debug_puts("\n");
 
                 // Valid packet
@@ -275,7 +271,6 @@ int uart_rx_process(void)
             }
             else
             {
-                // CRC error
                 rx_packet_error = true;
             }
 

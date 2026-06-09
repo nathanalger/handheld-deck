@@ -58,6 +58,7 @@ void uart_rx_handler(event_t *e, void *user_data)
 {
    // This handler processes UART RX events
    // The event type is EVENT_UART_RX and the value contains the packet data
+   debug_puts("UART handler reached.");
 
    switch (e->type)
    {
