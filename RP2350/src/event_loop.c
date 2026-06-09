@@ -58,28 +58,6 @@ void uart_rx_handler(event_t *e, void *user_data)
 {
    // This handler processes UART RX events
    // The event type is EVENT_UART_RX and the value contains the packet data
-   debug_puts("UART handler reached.");
 
-   switch (e->type)
-   {
-   case EVENT_UART_RX:
-      // Process received packet
-      // e->source contains the packet type (BUTTON_UP, BUTTON_DOWN, etc.)
-      // e->value contains the data (pin number for button events)
-
-      if (e->source == COMPUTE_PKT_PING)
-      {
-         // Meant for debugging UART RX packets
-         debug_puts("Recieved UART Ping.\n");
-      }
-      break;
-
-   default:
-      debug_puts("Unable to handle invalid event of type ");
-      debug_hex8(e->type);
-      debug_puts(" and source ");
-      debug_hex8(e->source);
-      debug_puts("\n");
-      break;
-   }
+   debug_puts("Recieved UART Ping.\n");
 }

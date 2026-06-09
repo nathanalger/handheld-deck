@@ -34,14 +34,14 @@ int main()
    button_init(2, &router, default_button_handler);
 
    // Register UART RX handler
-   event_router_register(&router, EVENT_UART_RX, 0, uart_rx_handler, NULL);
+   // TODO: If this works, I need to place this into its own init function as there will be many registers.
+   event_router_register(&router, EVENT_UART_RX, COMPUTE_PKT_PING, uart_rx_handler, NULL);
 
    debug_puts("Entering Event Loop.\n");
 
    while (1)
    {
       // Process incoming UART packets
-      uart_rx_process();
       uart_rx_poll(&system_events);
 
       event_loop(&system_events, &router);
