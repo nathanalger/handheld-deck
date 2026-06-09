@@ -5,6 +5,8 @@
 #include "debug.h"
 #include "hardware/irq.h"
 
+extern event_queue_t system_events;
+
 static volatile uint8_t seq = 0;
 
 // RX state machine variables
@@ -34,8 +36,6 @@ void uart_irq_handler(void)
 {
     // Process incoming UART data when interrupt occurs
     uart_rx_process();
-    uart_rx_poll(NULL); // We don't need to push to a specific queue here,
-                        // as uart_rx_poll() already pushes to the global system_events queue
 }
 
 void uart_setup()
