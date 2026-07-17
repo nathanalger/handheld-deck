@@ -36,8 +36,8 @@ chmod +x setup_linux.sh
 
 In order to build and compile, run these commands from the [UI Folder](/RK3566/ui/):
 ```bash
-  cmake -S ./ -B ./build                # Generates Build Files
-  cmake --build ./build --config Debug  # Compiles Application
+  cmake -S . -B build                   # Generates Build Files
+  cmake --build build --config Debug    # Compiles Application
 ```
 
 Output will be in the [Bin Folder](RK3566/ui/bin/).
