@@ -12,8 +12,6 @@ project(handheld_ui LANGUAGES CXX)
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-find_package(SDL3 CONFIG REQUIRED)
-
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/bin)
 
 foreach(CONFIG Debug Release RelWithDebInfo MinSizeRel)
