@@ -11,6 +11,8 @@ fi
 
 cd "$VCPKG"
 
-./bootstrap-vcpkg.sh
+if [ ! -f "./vcpkg" ]; then
+    ./bootstrap-vcpkg.sh
+fi
 
 ./vcpkg install sdl3:x64-linux
