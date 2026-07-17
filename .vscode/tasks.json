@@ -1,18 +1,61 @@
 {
-  "version": "2.0.0",
-  "tasks": [
-    {
-      "label": "RP2350: Build Firmware",
-      "type": "shell",
-      "command": "${workspaceFolder}/tools/build.sh",
-      "options": {
-        "cwd": "${workspaceFolder}"
-      },
-      "problemMatcher": [],
-      "group": {
-        "kind": "build",
-        "isDefault": true
-      }
-    }
-  ]
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "Build handheld_ui",
+            "type": "shell",
+            "command": "cmake",
+            "args": [
+                "-S",
+                "RK3566/ui",
+                "-B",
+                "RK3566/ui/build"
+            ],
+            "options": {
+                "cwd": "${workspaceFolder}"
+            },
+            "problemMatcher": [
+                "$msCompile"
+            ],
+            "group": {
+                "kind": "build",
+                "isDefault": false
+            }
+        },
+        {
+            "label": "Compile handheld_ui",
+            "type": "shell",
+            "command": "cmake",
+            "args": [
+                "--build",
+                "RK3566/ui/build",
+                "--config",
+                "Debug"
+            ],
+            "options": {
+                "cwd": "${workspaceFolder}"
+            },
+            "dependsOn": "Build handheld_ui",
+            "problemMatcher": [
+                "$msCompile"
+            ],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            }
+        },
+        {
+            "label": "Run handheld_ui",
+            "type": "shell",
+            "command": "${workspaceFolder}/RK3566/ui/bin/Debug/handheld_ui.exe",
+            "options": {
+                "cwd": "${workspaceFolder}"
+            },
+            "problemMatcher": [],
+            "group": {
+                "kind": "test",
+                "isDefault": false
+            }
+        }
+    ]
 }
