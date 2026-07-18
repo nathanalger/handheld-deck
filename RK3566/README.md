@@ -54,6 +54,31 @@ Planned:
 - Battery management
 - UART communication drivers
 
+## Project Structure
+
+### Directory Layout
+
+The `src` and `include` folders are structured the same. 
+
+The structure is as shown below:
+src/include - root folder and contains entry points
+↳ display - contains display drivers and other related files
+↳ root - contains app core files
+
+### Noteable files
+
+This will list notable files and their basic descriptions. Combines source and header files unless specified. Some files will not be mentioned.
+
+display
+↳ framebuffer: storage object for a single frame before being pushed to the display.
+↳ renderer: provides standard functions for drawing to the framebuffer
+↳ display_driver.hpp: abstract interface for display drivers. In particular:
+   ↳ uc8179_display: unimplemented
+   ↳ sdl3_display: prints to SDL3 display for debugging on windows/linux
+
+root
+↳ app: has the `run()` function for the app.
+
 ## Appendix
 
 Yes, the name SaDOS is a play on the name GLaDOS from the Portal Series.

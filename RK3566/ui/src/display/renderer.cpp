@@ -11,20 +11,21 @@ void Renderer::clear()
    i_framebuffer.clear();
 }
 
-void Renderer::drawPixel(int32_t x, int32_t y, PixelColor color)
+void Renderer::drawPixel(int32_t x,
+                         int32_t y,
+                         PixelColor color)
 {
-   if (x < 0 || y < 0)
+   if ((uint32_t)x >= i_framebuffer.width() ||
+       (uint32_t)y >= i_framebuffer.height())
       return;
 
-   if (x >= i_framebuffer.width() || y >= i_framebuffer.height())
-      return;
-
-   i_framebuffer.setPixel(
+   i_framebuffer.setPixelUnchecked(
        static_cast<uint16_t>(x),
        static_cast<uint16_t>(y),
        color);
 }
 
+// TODO: Clipping
 void Renderer::drawRect(int32_t x,
                         int32_t y,
                         uint32_t width,
@@ -52,6 +53,33 @@ void Renderer::drawRect(int32_t x,
       for (int32_t col = x; col < maxX; col++)
       {
          drawPixel(col, row, color);
+      }
+   }
+}
+
+// TODO: Clipping
+void Renderer::drawBitmap(int32_t x,
+                          int32_t y,
+                          const Bitmap &bitmap,
+                          PixelColor primaryColor)
+{
+   for (uint16_t row = 0; row < bitmap.height; row++)
+   {
+      for (uint16_t col = 0; col < bitmap.width; col++)
+      {
+         uint32_t byteIndex =
+             row * bitmap.stride + (col / 8);
+
+         uint8_t bitMask =
+             static_cast<uint8_t>(0x80 >> (col % 8));
+
+         if (bitmap.data[byteIndex] & bitMask)
+         {
+            drawPixel(
+                x + static_cast<int32_t>(col),
+                y + static_cast<int32_t>(row),
+                primaryColor);
+         }
       }
    }
 }

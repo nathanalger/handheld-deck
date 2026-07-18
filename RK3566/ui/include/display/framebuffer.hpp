@@ -74,6 +74,13 @@ public:
    const uint8_t *data() const;
 
    /**
+    * Sets a pixel without checking bounds. Fast but unsafe
+    */
+   void setPixelUnchecked(uint16_t x,
+                          uint16_t y,
+                          PixelColor color);
+
+   /**
     * Updates the specific pixel to the specified value
     */
    void setPixel(uint16_t x, uint16_t y, PixelColor value);

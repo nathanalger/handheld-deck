@@ -1,5 +1,6 @@
 #pragma once
 #include "framebuffer.hpp"
+#include "bitmap.hpp"
 
 class Renderer
 {
@@ -24,6 +25,11 @@ public:
                  uint32_t width,
                  uint32_t height,
                  PixelColor color);
+
+   void drawBitmap(int32_t x,
+                   int32_t y,
+                   const Bitmap &bitmap,
+                   PixelColor primary_color);
 
    Framebuffer &framebuffer()
    {
