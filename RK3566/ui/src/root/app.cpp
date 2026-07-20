@@ -18,6 +18,9 @@ void App::run()
       running = i_display.processEvents();
       i_renderer.clear();
 
+      i_renderer.drawRect(0,0,1000,40,PixelColor::Black);
+      i_renderer.drawRect(10,10,20,20,PixelColor::White);
+
       i_display.present(i_renderer.framebuffer());
    }
 }

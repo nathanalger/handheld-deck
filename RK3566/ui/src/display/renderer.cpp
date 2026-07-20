@@ -25,53 +25,68 @@ void Renderer::drawPixel(int32_t x,
        color);
 }
 
-// TODO: Clipping
 void Renderer::drawRect(int32_t x,
                         int32_t y,
                         uint32_t width,
                         uint32_t height,
                         PixelColor color)
 {
-   int32_t maxX = x + static_cast<int32_t>(width);
-   int32_t maxY = y + static_cast<int32_t>(height);
+   const int32_t framebufferWidth = static_cast<int32_t>(i_framebuffer.width());
+   const int32_t framebufferHeight = static_cast<int32_t>(i_framebuffer.height());
 
-   if (x >= static_cast<int32_t>(i_framebuffer.width()) ||
-       y >= static_cast<int32_t>(i_framebuffer.height()))
+   const int32_t rectRight = x + static_cast<int32_t>(width);
+   const int32_t rectBottom = y + static_cast<int32_t>(height);
+
+   const int32_t clipLeft = std::max<int32_t>(0, x);
+   const int32_t clipTop = std::max<int32_t>(0, y);
+   const int32_t clipRight = std::min<int32_t>(framebufferWidth, rectRight);
+   const int32_t clipBottom = std::min<int32_t>(framebufferHeight, rectBottom);
+
+   if (clipRight <= clipLeft || clipBottom <= clipTop)
       return;
 
-   if (maxX <= 0 || maxY <= 0)
-      return;
-
-   x = std::max(x, 0);
-   y = std::max(y, 0);
-
-   maxX = std::min(maxX, static_cast<int32_t>(i_framebuffer.width()));
-   maxY = std::min(maxY, static_cast<int32_t>(i_framebuffer.height()));
-
-   for (int32_t row = y; row < maxY; row++)
+   for (int32_t row = clipTop; row < clipBottom; row++)
    {
-      for (int32_t col = x; col < maxX; col++)
+      for (int32_t col = clipLeft; col < clipRight; col++)
       {
          drawPixel(col, row, color);
       }
    }
 }
 
-// TODO: Clipping
 void Renderer::drawBitmap(int32_t x,
                           int32_t y,
                           const Bitmap &bitmap,
                           PixelColor primaryColor)
 {
-   for (uint16_t row = 0; row < bitmap.height; row++)
-   {
-      for (uint16_t col = 0; col < bitmap.width; col++)
-      {
-         uint32_t byteIndex =
-             row * bitmap.stride + (col / 8);
+   if (bitmap.data == nullptr)
+      return;
 
-         uint8_t bitMask =
-             static_cast<uint8_t>(0x80 >> (col % 8));
+   const int32_t framebufferWidth = static_cast<int32_t>(i_framebuffer.width());
+   const int32_t framebufferHeight = static_cast<int32_t>(i_framebuffer.height());
+   const int32_t bitmapWidth = static_cast<int32_t>(bitmap.width);
+   const int32_t bitmapHeight = static_cast<int32_t>(bitmap.height);
+
+   const int32_t startCol = std::max<int32_t>(0, -x);
+   const int32_t endCol = std::min<int32_t>(bitmapWidth,
+                                             std::max<int32_t>(0, framebufferWidth - x));
+   const int32_t startRow = std::max<int32_t>(0, -y);
+   const int32_t endRow = std::min<int32_t>(bitmapHeight,
+                                            std::max<int32_t>(0, framebufferHeight - y));
+
+   if (startCol >= endCol || startRow >= endRow)
+      return;
+
+   for (int32_t row = startRow; row < endRow; row++)
+   {
+      for (int32_t col = startCol; col < endCol; col++)
+      {
+         const uint32_t byteIndex =
+             static_cast<uint32_t>(row) * bitmap.stride +
+             static_cast<uint32_t>(col / 8);
+
+         const uint8_t bitMask =
+             static_cast<uint8_t>(0x80u >> (col % 8));
 
          if (bitmap.data[byteIndex] & bitMask)
          {
