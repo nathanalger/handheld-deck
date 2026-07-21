@@ -39,7 +39,8 @@ public:
                  int32_t y,
                  const std::string &text,
                  const Font &font,
-                 PixelColor color);
+                 PixelColor color,
+                 uint16_t scale = 1);
 
    Framebuffer &framebuffer()
    {

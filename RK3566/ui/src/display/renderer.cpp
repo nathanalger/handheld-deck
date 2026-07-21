@@ -105,8 +105,10 @@ void Renderer::drawText(int32_t x,
                         int32_t y,
                         const std::string &text,
                         const Font &font,
-                        PixelColor color)
+                        PixelColor color,
+                        uint16_t scale)
 {
+   const uint16_t effectiveScale = std::max<uint16_t>(1, scale);
    int32_t cursorX = x;
    int32_t cursorY = y;
 
@@ -115,18 +117,22 @@ void Renderer::drawText(int32_t x,
       if (ch == '\n')
       {
          cursorX = x;
-         cursorY += static_cast<int32_t>(font.glyphHeight()) + 1;
+         cursorY += static_cast<int32_t>(font.glyphHeight() * effectiveScale) + 1;
          continue;
       }
 
       if (ch == ' ')
       {
-         cursorX += font.glyphAdvance(ch);
+         cursorX += font.glyphAdvance(ch) * effectiveScale;
          continue;
       }
 
-      Bitmap glyph = font.glyphBitmap(ch);
-      drawBitmap(cursorX, cursorY, glyph, color);
-      cursorX += font.glyphAdvance(ch);
+      const Glyph *glyph = font.glyph(ch);
+      if (glyph == nullptr)
+         continue;
+
+      const Bitmap bitmap = glyph->toBitmap(static_cast<uint16_t>(font.size() * effectiveScale));
+      drawBitmap(cursorX, cursorY, bitmap, color);
+      cursorX += font.glyphAdvance(ch) * effectiveScale;
    }
 }

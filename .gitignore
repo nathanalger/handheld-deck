@@ -6,4 +6,6 @@
 
 /RK3566/ui/bin
 
+/RK3566/ui/src/display/fonts/*.ttf
+
 /RK3566/vcpkg

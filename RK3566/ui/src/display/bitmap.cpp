@@ -14,7 +14,7 @@ namespace
 
 bool Bitmap::setPixel(int32_t x, int32_t y, bool value)
 {
-    if (data == nullptr || !isInBounds(x, y, width, height))
+    if (data.empty() || !isInBounds(x, y, width, height))
         return false;
 
     const uint32_t byteIndex =
@@ -33,7 +33,7 @@ bool Bitmap::setPixel(int32_t x, int32_t y, bool value)
 
 bool Bitmap::getPixel(int32_t x, int32_t y) const
 {
-    if (data == nullptr || !isInBounds(x, y, width, height))
+    if (data.empty() || !isInBounds(x, y, width, height))
         return false;
 
     const uint32_t byteIndex =
@@ -47,7 +47,7 @@ bool Bitmap::getPixel(int32_t x, int32_t y) const
 
 void Bitmap::clear(bool value)
 {
-    if (data == nullptr)
+    if (data.empty())
         return;
 
     for (uint32_t i = 0; i < static_cast<uint32_t>(height) * stride; ++i)
@@ -58,7 +58,7 @@ void Bitmap::clear(bool value)
 
 void Bitmap::drawBitmap(int32_t x, int32_t y, const Bitmap &bitmap, bool value)
 {
-    if (data == nullptr || bitmap.getData() == nullptr)
+    if (data.empty() || bitmap.getData() == nullptr)
         return;
 
     for (int32_t row = 0; row < static_cast<int32_t>(bitmap.getHeight()); ++row)
