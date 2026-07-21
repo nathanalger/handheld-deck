@@ -26,7 +26,8 @@ public:
     */
    explicit Framebuffer(uint16_t width, uint16_t height)
        : i_width(width),
-         i_height(height)
+         i_height(height),
+         updated(false)
    {
       if ((static_cast<size_t>(width) * height) % 8 != 0)
          throw std::invalid_argument("Framebuffer size must be byte aligned");
@@ -73,6 +74,16 @@ public:
     */
    const uint8_t *data() const;
 
+   bool hasUpdatedSinceLastDraw()
+   {
+      return updated;
+   }
+
+   void markUpdated()
+   {
+      updated = true;
+   }
+
    /**
     * Sets a pixel without checking bounds. Fast but unsafe
     */
@@ -98,6 +109,8 @@ public:
 private:
    uint16_t i_width;
    uint16_t i_height;
+
+   bool updated;
 
    std::vector<uint8_t> i_data;
 };

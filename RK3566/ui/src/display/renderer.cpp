@@ -11,6 +11,7 @@ Renderer::Renderer(Framebuffer &framebuffer)
 void Renderer::clear()
 {
    i_framebuffer.clear();
+   i_framebuffer.markUpdated();
 }
 
 void Renderer::drawPixel(int32_t x,
@@ -25,6 +26,8 @@ void Renderer::drawPixel(int32_t x,
        static_cast<uint16_t>(x),
        static_cast<uint16_t>(y),
        color);
+
+   i_framebuffer.markUpdated();
 }
 
 void Renderer::drawRect(int32_t x,
@@ -54,6 +57,8 @@ void Renderer::drawRect(int32_t x,
          drawPixel(col, row, color);
       }
    }
+
+   i_framebuffer.markUpdated();
 }
 
 void Renderer::drawBitmap(int32_t x,
@@ -99,6 +104,8 @@ void Renderer::drawBitmap(int32_t x,
          }
       }
    }
+
+   i_framebuffer.markUpdated();
 }
 
 void Renderer::drawText(int32_t x,
@@ -135,4 +142,6 @@ void Renderer::drawText(int32_t x,
       drawBitmap(cursorX, cursorY, bitmap, color);
       cursorX += font.glyphAdvance(ch) * effectiveScale;
    }
+
+   i_framebuffer.markUpdated();
 }
