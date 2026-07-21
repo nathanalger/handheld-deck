@@ -1,6 +1,10 @@
 #pragma once
+#include <string>
+
 #include "framebuffer.hpp"
 #include "bitmap.hpp"
+
+class Font;
 
 class Renderer
 {
@@ -30,6 +34,12 @@ public:
                    int32_t y,
                    const Bitmap &bitmap,
                    PixelColor primary_color);
+
+   void drawText(int32_t x,
+                 int32_t y,
+                 const std::string &text,
+                 const Font &font,
+                 PixelColor color);
 
    Framebuffer &framebuffer()
    {

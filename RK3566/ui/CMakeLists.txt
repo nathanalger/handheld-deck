@@ -28,6 +28,8 @@ set(COMMON_SOURCES
 
     src/display/framebuffer.cpp
     src/display/renderer.cpp
+    src/display/bitmap.cpp
+    src/display/fonts.cpp
 )
 
 
